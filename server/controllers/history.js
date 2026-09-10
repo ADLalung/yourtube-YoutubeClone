@@ -1,0 +1,48 @@
+import video from "../Models/Video.js"
+import history from "../Models/History.js"
+
+export const handlehistory = async (req, res) => {
+  const { userId } = req.body
+  const { videoId } = req.params
+  try {
+    // if (existinghistory) {
+      // await history.findByIdAndDelete( existinghistory._id )
+      // await video.findByIdAndUpdate(videoId, { $inc: { views: -1 } })
+      // return res.status(200).json({ history: false })
+    // } else {
+      await history.create({ viewer: userId, videoid: videoId })
+      await video.findByIdAndUpdate(videoId, { $inc: { views: 1 } })
+      return res.status(200).json({ history: true })
+    // }
+  } catch (error) {
+    console.error(" error:", error);
+    return res.status(500).json({ message: "Something went wrong" })
+  }
+};
+
+export const getallHistory = async (req, res) => {
+  const { userId } = req.params
+  try {
+    const historyvideo = await history
+      .find({ viewer: userId })
+      .populate({
+        path: "videoid",
+        model: "videofiles",
+      })
+      .exec();
+    return res.status(200).json(historyvideo)
+  } catch (error) {
+    console.error(" Error:", error)
+    return res.status(500).json({ message: "Something went wrong" })
+  }
+};
+
+export const handleview = async(req,res)=>{
+    const { videoId } = req.params
+    try {
+        await video.findByIdAndUpdate(videoId, { $inc: { views: -1 } })
+    } catch (error) {
+        console.error(" Error:", error)
+        return res.status(500).json({ message: "Something went wrong" })
+    }
+}
