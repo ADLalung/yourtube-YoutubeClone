@@ -38,12 +38,12 @@ const DBURL = process.env.DB_URL
 console.log("Attempting to connect to MongoDB:", DBURL ? "✓ DB_URL found" : "✗ DB_URL missing")
 
 mongoose.connect(DBURL, {
-    serverSelectionTimeoutMS: 5000,
-    socketTimeoutMS: 5000,
-    connectTimeoutMS: 5000
+    serverSelectionTimeoutMS: 30000,
+    socketTimeoutMS: 30000,
+    connectTimeoutMS: 30000
 }).then(()=>{
     console.log("✓ MongoDB connected successfully")
-    app.listen(PORT, ()=>{console.log(`✓ Server running on port ${PORT}`)})
+    app.listen(PORT, "0.0.0.0", ()=>{console.log(`✓ Server running on port ${PORT}`)})
 }).catch((error)=>{
     console.error("✗ MongoDB connection error:", error.message)
     console.error("Full error:", error)
