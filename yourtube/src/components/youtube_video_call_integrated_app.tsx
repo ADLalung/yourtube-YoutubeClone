@@ -5,6 +5,20 @@ import {
   MicOff, Camera, CameraOff, MonitorUp, PhoneOff, Hand, MessageSquare, 
   Users, Shield, Wifi, WifiHigh, WifiLow, X, Send, Lock, UserX, UserCheck, CheckCircle2, ChevronRight
 } from 'lucide-react';
+import type { JSX } from 'react'
+
+type ConnectionQuality = 'high' | 'medium' | 'low';
+type ParticipantRole = 'host' | 'co-host' | 'guest';
+
+interface Participant {
+  id: string;
+  name: string;
+  isMicOn: boolean;
+  isCamOn: boolean;
+  isSpeaking: boolean;
+  connection: ConnectionQuality;
+  role: ParticipantRole;
+}
 
 const MOCK_VIDEOS = Array.from({ length: 12 }).map((_, i) => ({
   id: `vid-${i}`,
@@ -16,7 +30,7 @@ const MOCK_VIDEOS = Array.from({ length: 12 }).map((_, i) => ({
   avatar: `https://picsum.photos/seed/${i + 200}/100/100`
 }));
 
-const INITIAL_PARTICIPANTS = [
+const INITIAL_PARTICIPANTS: Participant[] = [
   { id: 'p1', name: 'Alice Johnson', isMicOn: true, isCamOn: true, isSpeaking: false, connection: 'high', role: 'co-host' },
   { id: 'p2', name: 'Bob Smith', isMicOn: false, isCamOn: true, isSpeaking: false, connection: 'medium', role: 'guest' },
   { id: 'p3', name: 'Charlie Davis', isMicOn: false, isCamOn: false, isSpeaking: false, connection: 'low', role: 'guest' },
@@ -29,17 +43,17 @@ export default function App() {
   
   // Call State
   const [roomId, setRoomId] = useState('');
-  const [localStream, setLocalStream] = useState(null);
+  const [localStream, setLocalStream] = useState<MediaStream | null>(null);
   const [isMicOn, setIsMicOn] = useState(true);
   const [isCamOn, setIsCamOn] = useState(true);
   const [isScreenSharing, setIsScreenSharing] = useState(false);
   const [isHandRaised, setIsHandRaised] = useState(false);
-  const [participants, setParticipants] = useState(INITIAL_PARTICIPANTS);
+  const [participants, setParticipants] = useState<Participant[]>(INITIAL_PARTICIPANTS);
   const [callDuration, setCallDuration] = useState(0);
   
   // Sidebar UI State
-  const [activePanel, setActivePanel] = useState(null); // 'chat', 'participants', 'settings', 'host'
-  const [chatMessages, setChatMessages] = useState([
+  const [activePanel, setActivePanel] = useState<'chat' | 'participants' | 'settings' | 'host' | null>(null); // 'chat', 'participants', 'settings', 'host'
+  const [chatMessages, setChatMessages] = useState<Array<{ id: number; sender: string; text: string; time: string }>>([
     { id: 1, sender: 'Alice Johnson', text: 'Hey everyone! 👋', time: '10:00 AM' }
   ]);
   const [chatInput, setChatInput] = useState('');
@@ -49,7 +63,7 @@ export default function App() {
   const [noiseSuppression, setNoiseSuppression] = useState(false);
   const [blurBackground, setBlurBackground] = useState(false);
 
-  const startLocalStream = async (audio = true, video = true) => {
+  const startLocalStream = async (audio: boolean = true, video: boolean = true): Promise<void> => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio, video });
       setLocalStream(stream);
@@ -61,14 +75,14 @@ export default function App() {
     }
   };
 
-  const stopLocalStream = () => {
+  const stopLocalStream = (): void => {
     if (localStream) {
       localStream.getTracks().forEach(track => track.stop());
       setLocalStream(null);
     }
   };
 
-  const toggleMic = () => {
+  const toggleMic = (): void => {
     if (localStream) {
       const audioTrack = localStream.getAudioTracks()[0];
       if (audioTrack) {
@@ -80,7 +94,7 @@ export default function App() {
     }
   };
 
-  const toggleCam = () => {
+  const toggleCam = (): void => {
     if (localStream) {
       const videoTrack = localStream.getVideoTracks()[0];
       if (videoTrack) {
@@ -92,7 +106,7 @@ export default function App() {
     }
   };
 
-  const toggleScreenShare = async () => {
+  const toggleScreenShare = async (): Promise<void> => {
     if (!isScreenSharing) {
       try {
         const screenStream = await navigator.mediaDevices.getDisplayMedia({ video: true });
@@ -114,7 +128,7 @@ export default function App() {
     }
   };
 
-  const stopScreenShare = async () => {
+  const stopScreenShare = async (): Promise<void> => {
     stopLocalStream();
     await startLocalStream(isMicOn, true);
     setIsScreenSharing(false);
@@ -148,18 +162,18 @@ export default function App() {
     return () => stopLocalStream();
   }, []);
 
-  const handleJoinCall = (id) => {
+  const handleJoinCall = (id: string) => {
     setRoomId(id || Math.random().toString(36).substring(7));
     setAppView('pre-join');
     startLocalStream();
   };
 
-  const enterMeeting = () => {
+  const enterMeeting = (): void => {
     setAppView('call');
     setCallDuration(0);
   };
 
-  const leaveCall = () => {
+  const leaveCall = (): void => {
     stopLocalStream();
     setAppView('youtube');
     setCallDuration(0);
@@ -167,7 +181,7 @@ export default function App() {
     setParticipants(INITIAL_PARTICIPANTS);
   };
 
-  const handleSendMessage = (e) => {
+  const handleSendMessage = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!chatInput.trim()) return;
     setChatMessages([...chatMessages, {
@@ -179,7 +193,7 @@ export default function App() {
     setChatInput('');
   };
 
-  const renderYouTube = () => (
+  const renderYouTube = (): JSX.Element => (
     <div className="flex flex-col h-screen bg-[#0f0f0f] text-white overflow-hidden font-sans">
       {/* Header */}
       <header className="flex items-center justify-between px-4 py-2 border-b border-gray-800">
@@ -285,7 +299,7 @@ export default function App() {
     </div>
   );
 
-  const renderPreJoin = () => (
+  const renderPreJoin = (): JSX.Element => (
     <div className="min-h-screen bg-[#111111] text-white flex items-center justify-center p-4">
       <div className="max-w-5xl w-full grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
         {/* Left: Video Preview */}
@@ -341,8 +355,8 @@ export default function App() {
     </div>
   );
 
-  const LocalVideo = ({ stream, className }) => {
-    const videoRef = useRef(null);
+  const LocalVideo = ({ stream, className }: { stream: MediaStream; className: string }) => {
+    const videoRef = useRef<HTMLVideoElement>(null);
     useEffect(() => {
       if (videoRef.current && stream) {
         videoRef.current.srcObject = stream;
@@ -351,19 +365,19 @@ export default function App() {
     return <video ref={videoRef} autoPlay playsInline muted className={className} />;
   };
 
-  const formatTime = (seconds) => {
+  const formatTime = (seconds: number): string => {
     const m = Math.floor(seconds / 60).toString().padStart(2, '0');
     const s = (seconds % 60).toString().padStart(2, '0');
     return `${m}:${s}`;
   };
 
-  const ConnectionIcon = ({ quality }) => {
+  const ConnectionIcon = ({ quality }: { quality: ConnectionQuality }) => {
     if (quality === 'high') return <WifiHigh className="w-4 h-4 text-green-500" />;
     if (quality === 'medium') return <Wifi className="w-4 h-4 text-yellow-500" />;
     return <WifiLow className="w-4 h-4 text-red-500" />;
   };
 
-  const renderSidebarPanel = () => {
+  const renderSidebarPanel = (): JSX.Element | null => {
     if (!activePanel) return null;
 
     return (
@@ -445,7 +459,7 @@ export default function App() {
                     <ConnectionIcon quality={p.connection} />
                     {p.isMicOn ? <Mic className="w-4 h-4" /> : <MicOff className="w-4 h-4 text-red-400" />}
                     <div className="opacity-0 group-hover:opacity-100 flex gap-1 transition-opacity">
-                      <button className="p-1 hover:text-red-400"><UserX className="w-4 h-4" title="Remove" /></button>
+                      <button className="p-1 hover:text-red-400" title="Remove"><UserX className="w-4 h-4" /></button>
                     </div>
                   </div>
                 </div>
@@ -496,7 +510,7 @@ export default function App() {
     );
   };
 
-  const renderCall = () => {
+  const renderCall = (): JSX.Element => {
     // Calculate grid columns based on number of participants (including local user)
     const totalUsers = participants.length + 1;
     let gridCols = "grid-cols-1";
