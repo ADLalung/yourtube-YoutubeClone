@@ -7,6 +7,10 @@
     "build": "next build",
     "start": "next start"
   },
+  "allowScripts": {
+    "@firebase/util": true,
+    "protobufjs": true
+  },
   "dependencies": {
     "@base-ui/react": "^1.7.0",
     "axios": "^1.20.0",

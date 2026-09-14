@@ -41,7 +41,9 @@ export const UserProvider = ({ children }) => {
       const response = await axiosInstance.post("/user/login", payload);
       login(response.data.result);
     } catch (error) {
-      console.error(error);
+      console.error("Sign-in error:", error.message);
+      console.error("Backend URL being used:", process.env.NEXT_PUBLIC_BACKEND_URL || process.env.BACKEND_URL || "NOT SET");
+      alert("Sign in failed: " + (error.response?.data?.message || error.message || "Unknown error"));
     } finally {
         setIsLoading(false)
     }
@@ -58,7 +60,8 @@ export const UserProvider = ({ children }) => {
           const response = await axiosInstance.post("/user/login", payload);
           login(response.data.result);
         } catch (error) {
-          console.error(error);
+          console.error("Auth state change error:", error.message);
+          console.error("Backend URL:", process.env.NEXT_PUBLIC_BACKEND_URL || process.env.BACKEND_URL || "NOT SET");
           logout();
         }
       }
