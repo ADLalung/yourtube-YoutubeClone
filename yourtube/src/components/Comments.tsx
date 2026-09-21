@@ -5,6 +5,7 @@ import { Button } from "./ui/button";
 import { formatDistanceToNow } from "date-fns";
 import { useUser } from "@/lib/AuthContext";
 import axiosInstance from "@/lib/axiosinstance";
+
 interface Comment {
   _id: string;
   videoid: string;
@@ -13,6 +14,7 @@ interface Comment {
   usercommented: string;
   commentedon: string;
 }
+
 const Comments = ({ videoId }: any) => {
   const [comments, setComments] = useState<Comment[]>([]);
   const [newComment, setNewComment] = useState("");
@@ -21,6 +23,7 @@ const Comments = ({ videoId }: any) => {
   const [editText, setEditText] = useState("");
   const { user } = useUser();
   const [loading, setLoading] = useState(true);
+
   const fetchedComments = [
     {
       _id: "1",
@@ -39,6 +42,7 @@ const Comments = ({ videoId }: any) => {
       commentedon: new Date(Date.now() - 7200000).toISOString(),
     },
   ];
+  
   useEffect(() => {
     loadComments();
   }, [videoId]);

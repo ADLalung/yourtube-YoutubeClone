@@ -11,6 +11,7 @@ import likeroutes from './routes/like.js'
 import watchlaterroutes from './routes/watchlater.js'
 import historyroutes from './routes/history.js'
 import commentroutes from './routes/comment.js'
+import downloadroutes from './routes/download.js'
 
 dotenv.config()
 const app=express()
@@ -31,6 +32,7 @@ app.use("/like", likeroutes)
 app.use("/watch", watchlaterroutes)
 app.use("/history", historyroutes)
 app.use("/comment", commentroutes)
+app.use("/download", downloadroutes) 
 
 const PORT = process.env.PORT || 5000
 const DBURL = process.env.DB_URL

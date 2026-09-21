@@ -21,13 +21,7 @@ const VideoInfo = ({ video }: any) => {
   const [showFullDescription, setShowFullDescription] = useState(false)
   const { user } = useUser();
   const [isWatchLater, setIsWatchLater] = useState(false)
-
-  // const user: any = {
-  //   id: "1",
-  //   name: "John Doe",
-  //   email: "john@example.com",
-  //   image: "https://github.com/shadcn.png?height=32&width=32",
-  // };
+  const [download, setDownload] = useState(false)
 
   useEffect(() => {
     setlikes(video.Like || 0);
@@ -125,7 +119,7 @@ const VideoInfo = ({ video }: any) => {
           </Avatar>
           <div>
             <h3 className="font-medium">{video.videochanel}</h3>
-            <p className="text-sm text-gray-600">1.2M subscribers</p>
+            <p className="text-sm text-gray-600">Some subscribers</p>
           </div>
           <Button className="ml-4">Subscribe</Button>
         </div>
@@ -175,16 +169,18 @@ const VideoInfo = ({ video }: any) => {
             size="sm"
             className="bg-gray-100 rounded-full"
           >
-            <Share className="w-5 h-5 mr-2" />
-            Share
+            <Share className="w-5 h-5 mr-2" />Share
           </Button>
           <Button
             variant="ghost"
             size="sm"
             className="bg-gray-100 rounded-full"
+            onClick={() => {
+              if (user) setDownload((prev: any) => !prev);
+              else alert("Please login first to download videos!");
+            }}
           >
-            <Download className="w-5 h-5 mr-2" />
-            Download
+            <Download className="w-5 h-5 mr-2" />Download
           </Button>
           <Button
             variant="ghost"

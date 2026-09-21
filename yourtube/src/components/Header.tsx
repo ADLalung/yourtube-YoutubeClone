@@ -1,82 +1,89 @@
-import { Bell, FaceSlightlySmiling, Flag, Menu, Mic, Search, User, VideoIcon } from "lucide-react"
-import React, { useState } from 'react';
-import { Button } from "./ui/button"
-import { Input } from "./ui/input"
+"use client"
+import {
+  Bell,
+  FaceSlightlySmiling,
+  Flag,
+  Menu,
+  Mic,
+  Search,
+  User,
+  VideoIcon,
+  Video,
+  PlaySquare
+} from "lucide-react";
+import React, { useState } from "react";
+import { Button } from "./ui/button";
+import { Input } from "./ui/input";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { 
-    DropdownMenu,
-    DropdownMenuTrigger, 
-    DropdownMenuContent, 
-    DropdownMenuItem,
-    DropdownMenuSeparator, 
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
 } from "./ui/dropdown-menu";
 import { Avatar, AvatarImage, AvatarFallback } from "./ui/avatar";
 import Channeldialogue from "@/components/Channeldialogue";
-import { useUser } from "@/lib/AuthContext"
+import { useUser } from "@/lib/AuthContext";
 
+const Header = ({onMenuClick}: any) => {
+  const { user, logout, handlegooglesignin, isLoading } = useUser();
+  
+  const router = useRouter();
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isDialogeopen, setIsDialogeopen] = useState(false);
 
-const Header = ()=>{
-
-    const { user, logout, handlegooglesignin, isLoading } = useUser();
-
-    // const user: any = {
-    //   id: "1",
-    //   name: "John Doe",
-    //   email: "john@example.com",
-    //   image: "https://github.com/shadcn.png?height=32&width=32",
-    // };
-
-    const router = useRouter()
-    const [searchQuery, setSearchQuery] = useState("");
-    const [isDialogeopen, setIsDialogeopen] = useState(false)
-    
-    const handleSearch = (e:React.FormEvent) => {
-      e.preventDefault()
-      if(searchQuery.trim()){
-        router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`)
-      }
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
     }
+  };
 
-    const handleKeypress = (e:React.KeyboardEvent) => {
-      if(e.key==="Enter"){
-        handleSearch(e as any)
-      }
-
+  const handleKeypress = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      handleSearch(e as any);
     }
+  };
 
-    return (
+  return (
     <header className="flex items-center justify-between px-4 py-2 bg-white border-b">
       <div className="flex items-center gap-4">
-        <Button variant="ghost" size="icon">
-          <Menu className="w-6 h-6" />
+        
+        <Button variant="ghost" className="md:flex text-zinc-400"
+          onClick={onMenuClick}
+        >
+          <Menu className="w-6 h-6 text-zinc-500" />
         </Button>
+
         <Link href="/" className="flex items-center gap-1">
-          <div className="bg-red-600 p-1 rounded">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="white">
-              <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
-            </svg>
+          <div className="p-1 rounded">
+            <PlaySquare className="w-6 h-6 text-red-700" />
           </div>
           <span className="text-xl font-medium">YourTube</span>
           <span className="text-xs text-gray-400 ml-1">IN</span>
         </Link>
       </div>
+
       <form
         onSubmit={handleSearch}
         className="flex items-center gap-2 flex-1 max-w-2xl mx-4"
       >
-        <div className="flex flex-1">
+        <div className="flex flex-1 item-center rounded-full
+            focus-within:ring-1 focus-within:ring-gray-400 "
+        >
           <Input
-            type="search"
-            placeholder="Search"
+            type="text"
+            placeholder="Search videos"
             value={searchQuery}
             onKeyPress={handleKeypress}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="rounded-l-full border-r-0 focus-visible:ring-0"
+            className="bg-transparent rounded-l-full border-r-0 focus-visible:ring-0"
           />
           <Button
             type="submit"
-            className="rounded-r-full px-6 bg-gray-50 hover:bg-gray-100 text-gray-600 border border-l-0"
+            className="rounded-r-full px-6 bg-zinc-200 hover:bg-zinc-300 text-gray-600 border border-l-0"
           >
             <Search className="w-5 h-5" />
           </Button>
@@ -85,12 +92,21 @@ const Header = ()=>{
           <Mic className="w-5 h-5" />
         </Button>
       </form>
+
       <div className="flex items-center gap-2">
         {user ? (
           <>
-            <Button variant="ghost" size="icon">
-              <VideoIcon className="w-6 h-6" />
-            </Button>
+            <Link
+              href="/meeting"
+              className="flex items-center gap-2
+                text-gray-300 bg-zinc-800 rounded-md p-1
+                hover:bg-zinc-600 transition-color duration-300
+              "
+            >
+              <Video className="w-6 h-6" />
+              <span className="hidden sm:inline">Meet/Live</span>
+            </Link>
+
             <Button variant="ghost" size="icon">
               <Bell className="w-6 h-6" />
             </Button>
@@ -106,9 +122,9 @@ const Header = ()=>{
                   </Avatar>
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-56" align="end" >
+              <DropdownMenuContent className="w-56" align="end">
                 {user?.channelname ? (
-                  <DropdownMenuItem >
+                  <DropdownMenuItem>
                     <Link href={`/channel/${user?._id}`}>Your channel</Link>
                   </DropdownMenuItem>
                 ) : (
@@ -124,19 +140,20 @@ const Header = ()=>{
                   </div>
                 )}
 
-                <DropdownMenuItem >
+                <DropdownMenuItem>
                   <Link href="/history">History</Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem >
+                <DropdownMenuItem>
                   <Link href="/liked">Liked videos</Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem >
+                <DropdownMenuItem>
                   <Link href="/watch-later">Watch later</Link>
                 </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={logout}>
-                  Sign out
+                <DropdownMenuItem>
+                  <Link href="/downloads">Downloads</Link>
                 </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={logout}>Sign out</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </>
@@ -148,18 +165,18 @@ const Header = ()=>{
               disabled={isLoading}
             >
               <User className="w-4 h-4" />
-              {isLoading ? "Signing in...": "Sign in"}
+              {isLoading ? "Signing in..." : "Sign in"}
             </Button>
           </>
         )}{" "}
       </div>
-      <Channeldialogue 
+      <Channeldialogue
         isopen={isDialogeopen}
-        onclose={()=>setIsDialogeopen(false)} 
+        onclose={() => setIsDialogeopen(false)}
         mode="create"
       />
     </header>
   );
-}
+};
 
-export default Header 
+export default Header;
